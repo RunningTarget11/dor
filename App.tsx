@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Linking, Share, StyleSheet, useColorScheme } from 'react-native';
 import * as Application from 'expo-application';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -7,6 +7,7 @@ import * as Clipboard from 'expo-clipboard';
 import * as SplashScreen from 'expo-splash-screen';
 import { WebView } from 'react-native-webview';
 import { DOR_HTML } from './src/dorHtml';
+import SplashIntro from './src/SplashIntro';
 
 // The WebView class types don't line up with this React version's types; use it untyped.
 const WV: any = WebView;
@@ -71,6 +72,12 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 export default function App() {
   const dark = useColorScheme() === 'dark';
   const web = useRef<any>(null);
+  const [intro, setIntro] = useState(true);
+  useEffect(() => {
+    // hand over from the phone's built-in splash to the full startup screen
+    const t = setTimeout(() => SplashScreen.hideAsync().catch(() => {}), 150);
+    return () => clearTimeout(t);
+  }, []);
   useEffect(() => {
     const t = setTimeout(() => checkForUpdate(false), 3000);
     return () => clearTimeout(t);
@@ -119,6 +126,7 @@ export default function App() {
           />
         </SafeAreaView>
       </SafeAreaView>
+      {intro && <SplashIntro onDone={() => setIntro(false)} />}
     </SafeAreaProvider>
   );
 }
