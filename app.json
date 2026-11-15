@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "DOR",
+    "slug": "dor",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#1f3a5f",
+    "android": {
+      "package": "com.circuitmandate.dor",
+      "adaptiveIcon": {
+        "backgroundColor": "#1f3a5f",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "softwareKeyboardLayoutMode": "resize",
+      "permissions": []
+    },
+    "ios": {
+      "bundleIdentifier": "com.circuitmandate.dor"
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "imageWidth": 240,
+          "resizeMode": "contain",
+          "backgroundColor": "#1f3a5f"
+        }
+      ]
+    ]
+  }
+}
