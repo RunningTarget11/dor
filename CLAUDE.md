@@ -16,3 +16,9 @@ the page (`<p id="ver">`): the claude.ai artifact "DOR Narrative Builder — CHP
 For every change, bump it in all three (1.1 → 1.2 for changes, 2.0 for big redesigns),
 update the date, and keep the "(offline)" / "(app)" label. Also bump `version` in
 app.json and package.json to match.
+
+## Updates
+The app checks `https://api.github.com/repos/RunningTarget11/dor/releases/latest` on launch
+and from the "Check for updates" button, compares the `build-N` tag with its own build
+(versionCode − 1000), and offers to download `DOR-latest.apk`. This only works while the
+repo is public.
