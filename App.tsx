@@ -20,22 +20,40 @@ const installedBuild = () => {
   const n = Number(Application.nativeBuildVersion);
   return n > 1000 ? n - 1000 : 0;
 };
+/**
+ * Newest build number. Reads where github.com/<repo>/releases/latest redirects to
+ * (.../releases/tag/build-N), which works from any phone. GitHub's API is only a
+ * fallback, since it allows few requests per hour from shared mobile networks.
+ */
 async function latestBuild(): Promise<number | null> {
+  const tag = (s: string) => {
+    const m = String(s || '').match(/build-(\d+)/);
+    return m ? Number(m[1]) : null;
+  };
+  try {
+    const r = await fetch(`https://github.com/${REPO}/releases/latest`, { headers: { 'Cache-Control': 'no-cache' } });
+    const fromUrl = tag(r.url);
+    if (fromUrl) return fromUrl;
+    if (r.ok) {
+      const html = await r.text();
+      const m = html.match(/releases\/tag\/(build-\d+)/);
+      if (m) return tag(m[1]);
+    }
+  } catch {}
   try {
     const r = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, { headers: { Accept: 'application/vnd.github+json' } });
-    if (!r.ok) return null;
-    const j = await r.json();
-    const m = String(j.tag_name || '').match(/build-(\d+)/);
-    return m ? Number(m[1]) : null;
-  } catch {
-    return null;
-  }
+    if (r.ok) return tag((await r.json()).tag_name);
+  } catch {}
+  return null;
 }
 async function checkForUpdate(manual: boolean) {
   const mine = installedBuild();
   const latest = await latestBuild();
   if (latest == null) {
-    if (manual) Alert.alert('Couldn\'t check for updates', 'Make sure the phone is online and try again.');
+    if (manual) Alert.alert('Couldn\'t check for updates', 'GitHub didn\'t answer. Try again in a few minutes, or download the newest version here.', [
+      { text: 'OK', style: 'cancel' },
+      { text: 'Download', onPress: () => Linking.openURL(APK_URL).catch(() => {}) },
+    ]);
     return;
   }
   if (latest > mine) {
