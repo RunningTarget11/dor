@@ -73,6 +73,8 @@ export default function App() {
   const dark = useColorScheme() === 'dark';
   const web = useRef<any>(null);
   const [intro, setIntro] = useState(true);
+  // Bumped to reload the page. location.reload() can't be used: the page's base address isn't a real site.
+  const [reloadKey, setReloadKey] = useState(0);
   useEffect(() => {
     // hand over from the phone's built-in splash to the full startup screen
     const t = setTimeout(() => SplashScreen.hideAsync().catch(() => {}), 150);
@@ -93,6 +95,7 @@ export default function App() {
     if (m.type === 'copy' && m.text) await Clipboard.setStringAsync(m.text);
     if (m.type === 'share' && m.text) Share.share({ message: m.text }).catch(() => {});
     if (m.type === 'update') checkForUpdate(true);
+    if (m.type === 'reload') setReloadKey((k) => k + 1);
   };
 
   // Email (mailto:) and outside links open in the phone's own apps.
@@ -108,6 +111,7 @@ export default function App() {
         <StatusBar style="light" />
         <SafeAreaView style={[styles.root, { backgroundColor: dark ? '#12161d' : '#f4f2ed' }]} edges={['bottom']}>
           <WV
+            key={reloadKey}
             source={{ html: DOR_HTML, baseUrl: BASE }}
             originWhitelist={['*']}
             domStorageEnabled
